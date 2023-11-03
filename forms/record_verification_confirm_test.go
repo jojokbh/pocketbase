@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/forms"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tools/security"
+	"github.com/jojokbh/pocketbase/forms"
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/tests"
+	"github.com/jojokbh/pocketbase/tools/security"
 )
 
 func TestRecordVerificationConfirmValidateAndSubmit(t *testing.T) {

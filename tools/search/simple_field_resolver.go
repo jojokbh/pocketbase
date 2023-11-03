@@ -3,9 +3,9 @@ package search
 import (
 	"fmt"
 
+	"github.com/jojokbh/pocketbase/tools/inflector"
+	"github.com/jojokbh/pocketbase/tools/list"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/tools/inflector"
-	"github.com/pocketbase/pocketbase/tools/list"
 )
 
 // ResolverResult defines a single FieldResolver.Resolve() successfully parsed result.

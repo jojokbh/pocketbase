@@ -9,14 +9,28 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jojokbh/pocketbase/models"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/models"
 )
 
 // New creates a new Dao instance with the provided db builder
 // (for both async and sync db operations).
-func New(db dbx.Builder) *Dao {
+func New(db dbx.Builder, postgres_optional ...string) *Dao {
+	if len(postgres_optional) >= 0 {
+		return NewMultiPostgressDB(db)
+	}
 	return NewMultiDB(db, db)
+}
+
+// New creates a new Dao instance with the provided dedicated
+// async and sync db builders.
+func NewMultiPostgressDB(postgressDB dbx.Builder) *Dao {
+	return &Dao{
+		concurrentDB:      postgressDB,
+		nonconcurrentDB:   postgressDB,
+		MaxLockRetries:    8,
+		ModelQueryTimeout: 30 * time.Second,
+	}
 }
 
 // New creates a new Dao instance with the provided dedicated
@@ -41,7 +55,7 @@ type Dao struct {
 	// MaxLockRetries specifies the default max "database is locked" auto retry attempts.
 	MaxLockRetries int
 
-	// ModelQueryTimeout is the default max duration of a running ModelQuery().
+	// ModelQueryTimeout is the default max duration of a running Mod elQuery().
 	//
 	// This field has no effect if an explicit query context is already specified.
 	ModelQueryTimeout time.Duration
@@ -106,7 +120,7 @@ func (dao *Dao) ModelQuery(m models.Model) *dbx.SelectQuery {
 	tableName := m.TableName()
 
 	return dao.DB().
-		Select("{{" + tableName + "}}.*").
+		Select(tableName + ".*").
 		From(tableName).
 		WithBuildHook(func(query *dbx.Query) {
 			query.WithExecHook(execLockRetry(dao.ModelQueryTimeout, dao.MaxLockRetries))

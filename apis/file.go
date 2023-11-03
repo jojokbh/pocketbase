@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/jojokbh/pocketbase/core"
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/models/schema"
+	"github.com/jojokbh/pocketbase/tokens"
+	"github.com/jojokbh/pocketbase/tools/list"
+	"github.com/jojokbh/pocketbase/tools/security"
 	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/models/schema"
-	"github.com/pocketbase/pocketbase/tokens"
-	"github.com/pocketbase/pocketbase/tools/list"
-	"github.com/pocketbase/pocketbase/tools/security"
 	"github.com/spf13/cast"
 )
 

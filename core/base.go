@@ -12,16 +12,16 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/jojokbh/pocketbase/daos"
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/models/settings"
+	"github.com/jojokbh/pocketbase/tools/filesystem"
+	"github.com/jojokbh/pocketbase/tools/hook"
+	"github.com/jojokbh/pocketbase/tools/mailer"
+	"github.com/jojokbh/pocketbase/tools/routine"
+	"github.com/jojokbh/pocketbase/tools/store"
+	"github.com/jojokbh/pocketbase/tools/subscriptions"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/models/settings"
-	"github.com/pocketbase/pocketbase/tools/filesystem"
-	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/pocketbase/pocketbase/tools/mailer"
-	"github.com/pocketbase/pocketbase/tools/routine"
-	"github.com/pocketbase/pocketbase/tools/store"
-	"github.com/pocketbase/pocketbase/tools/subscriptions"
 )
 
 const (
@@ -32,7 +32,8 @@ const (
 
 	LocalStorageDirName string = "storage"
 	LocalBackupsDirName string = "backups"
-	LocalTempDirName    string = ".pb_temp_to_delete" // temp pb_data sub directory that will be deleted on each app.Bootstrap()
+	LocalTempDirName    string = ".pb_temp_to_delete"                                                                             // temp pb_data sub directory that will be deleted on each app.Bootstrap()
+	postgresDSN         string = "postgresql://localhost:5432/pocketbase?sslmode=disable&user=postgres&password=mysecretpassword" // temp pb_data sub directory that will be deleted on each app.Bootstrap()
 )
 
 var _ App = (*BaseApp)(nil)
@@ -335,7 +336,8 @@ func (app *BaseApp) Bootstrap() error {
 		return err
 	}
 
-	if err := app.initDataDB(); err != nil {
+	//if err := app.initDataDB(); err != nil {
+	if err := app.initDataPostgress(postgresDSN); err != nil {
 		return err
 	}
 
@@ -1041,13 +1043,53 @@ func (app *BaseApp) initDataDB() error {
 		concurrentDB.ExecLogFunc = nonconcurrentDB.ExecLogFunc
 	}
 
-	app.dao = app.createDaoWithHooks(concurrentDB, nonconcurrentDB)
+	dao := daos.NewMultiDB(concurrentDB, nonconcurrentDB)
+
+	app.dao = app.createDaoWithHooks(dao)
 
 	return nil
 }
 
-func (app *BaseApp) createDaoWithHooks(concurrentDB, nonconcurrentDB dbx.Builder) *daos.Dao {
-	dao := daos.NewMultiDB(concurrentDB, nonconcurrentDB)
+func (app *BaseApp) initDataPostgress(dsn string) error {
+	maxOpenConns := DefaultDataMaxOpenConns
+	maxIdleConns := DefaultDataMaxIdleConns
+	if app.dataMaxOpenConns > 0 {
+		maxOpenConns = app.dataMaxOpenConns
+	}
+	if app.dataMaxIdleConns > 0 {
+		maxIdleConns = app.dataMaxIdleConns
+	}
+
+	concurrentDB, err := connectPostgres(dsn)
+	if err != nil {
+		return err
+	}
+	concurrentDB.DB().SetMaxOpenConns(maxOpenConns)
+	concurrentDB.DB().SetMaxIdleConns(maxIdleConns)
+	concurrentDB.DB().SetConnMaxIdleTime(5 * time.Minute)
+
+	nonconcurrentDB := concurrentDB
+
+	if app.IsDebug() {
+		nonconcurrentDB.QueryLogFunc = func(ctx context.Context, t time.Duration, sql string, rows *sql.Rows, err error) {
+			color.HiBlack("[%.2fms] %v\n", float64(t.Milliseconds()), sql)
+		}
+		concurrentDB.QueryLogFunc = nonconcurrentDB.QueryLogFunc
+
+		nonconcurrentDB.ExecLogFunc = func(ctx context.Context, t time.Duration, sql string, result sql.Result, err error) {
+			color.HiBlack("[%.2fms] %v\n", float64(t.Milliseconds()), sql)
+		}
+		concurrentDB.ExecLogFunc = nonconcurrentDB.ExecLogFunc
+	}
+
+	dao := daos.NewMultiPostgressDB(concurrentDB)
+
+	app.dao = app.createDaoWithHooks(dao)
+
+	return nil
+}
+
+func (app *BaseApp) createDaoWithHooks(dao *daos.Dao) *daos.Dao {
 
 	dao.BeforeCreateFunc = func(eventDao *daos.Dao, m models.Model, action func() error) error {
 		e := new(ModelEvent)

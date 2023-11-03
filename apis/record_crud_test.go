@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jojokbh/pocketbase/core"
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/tests"
 	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/tests"
 )
 
 func TestRecordCrudList(t *testing.T) {

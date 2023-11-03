@@ -3,9 +3,9 @@ package daos
 import (
 	"time"
 
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/tools/types"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/tools/types"
 )
 
 // RequestQuery returns a new Request logs select query.
@@ -39,7 +39,7 @@ func (dao *Dao) RequestsStats(expr dbx.Expression) ([]*RequestsStatsItem, error)
 	result := []*RequestsStatsItem{}
 
 	query := dao.RequestQuery().
-		Select("count(id) as total", "strftime('%Y-%m-%d %H:00:00', created) as date").
+		Select("count(id) as total", "created").
 		GroupBy("date")
 
 	if expr != nil {

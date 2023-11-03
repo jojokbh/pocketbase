@@ -8,17 +8,17 @@ import (
 func init() {
 	AppMigrations.Register(func(db dbx.Builder) error {
 		_, err := db.NewQuery(`
-			UPDATE {{_params}}
-			SET [[value]] = replace([[value]], '"authentikAuth":', '"oidcAuth":')
-			WHERE [[key]] = 'settings'
+			UPDATE _params
+			SET value = value - '"authentikAuth":' || jsonb_build_object('"oidcAuth":', value->'"authentikAuth":')
+			WHERE key = 'settings'
 		`).Execute()
 
 		return err
 	}, func(db dbx.Builder) error {
 		_, err := db.NewQuery(`
-			UPDATE {{_params}}
-			SET [[value]] = replace([[value]], '"oidcAuth":', '"authentikAuth":')
-			WHERE [[key]] = 'settings'
+			UPDATE _params
+			SET value = replace(value, '"oidcAuth":', '"authentikAuth":')
+			WHERE key = 'settings'
 		`).Execute()
 
 		return err

@@ -2,11 +2,12 @@ package daos
 
 import (
 	"encoding/json"
+	"fmt"
 
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/tools/security"
+	"github.com/jojokbh/pocketbase/tools/types"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/tools/security"
-	"github.com/pocketbase/pocketbase/tools/types"
 )
 
 // ParamQuery returns a new Param select query.
@@ -17,6 +18,8 @@ func (dao *Dao) ParamQuery() *dbx.SelectQuery {
 // FindParamByKey finds the first Param model with the provided key.
 func (dao *Dao) FindParamByKey(key string) (*models.Param, error) {
 	param := &models.Param{}
+
+	fmt.Println(key)
 
 	err := dao.ParamQuery().
 		AndWhere(dbx.HashExp{"key": key}).

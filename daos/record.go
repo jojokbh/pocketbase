@@ -7,15 +7,15 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/models/schema"
+	"github.com/jojokbh/pocketbase/resolvers"
+	"github.com/jojokbh/pocketbase/tools/inflector"
+	"github.com/jojokbh/pocketbase/tools/list"
+	"github.com/jojokbh/pocketbase/tools/search"
+	"github.com/jojokbh/pocketbase/tools/security"
+	"github.com/jojokbh/pocketbase/tools/types"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/models/schema"
-	"github.com/pocketbase/pocketbase/resolvers"
-	"github.com/pocketbase/pocketbase/tools/inflector"
-	"github.com/pocketbase/pocketbase/tools/list"
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/security"
-	"github.com/pocketbase/pocketbase/tools/types"
 	"github.com/spf13/cast"
 )
 

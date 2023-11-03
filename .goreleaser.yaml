@@ -12,7 +12,7 @@ builds:
     main: ./examples/base
     binary: pocketbase
     ldflags:
-      - -s -w -X github.com/pocketbase/pocketbase.Version={{ .Version }}
+      - -s -w -X github.com/jojokbh/pocketbase.Version={{ .Version }}
     env:
       - CGO_ENABLED=1
     goos:
@@ -24,7 +24,7 @@ builds:
     main: ./examples/base
     binary: pocketbase
     ldflags:
-      - -s -w -X github.com/pocketbase/pocketbase.Version={{ .Version }}
+      - -s -w -X github.com/jojokbh/pocketbase.Version={{ .Version }}
     env:
       - CGO_ENABLED=0
     goos:

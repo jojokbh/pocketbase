@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/jojokbh/pocketbase/daos"
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/models/schema"
+	"github.com/jojokbh/pocketbase/models/settings"
+	"github.com/jojokbh/pocketbase/tools/migrate"
+	"github.com/jojokbh/pocketbase/tools/types"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/models/schema"
-	"github.com/pocketbase/pocketbase/models/settings"
-	"github.com/pocketbase/pocketbase/tools/migrate"
-	"github.com/pocketbase/pocketbase/tools/types"
 )
 
 var AppMigrations migrate.MigrationsList
@@ -36,62 +36,62 @@ func Register(
 func init() {
 	AppMigrations.Register(func(db dbx.Builder) error {
 		_, tablesErr := db.NewQuery(`
-			CREATE TABLE {{_admins}} (
-				[[id]]              TEXT PRIMARY KEY NOT NULL,
-				[[avatar]]          INTEGER DEFAULT 0 NOT NULL,
-				[[email]]           TEXT UNIQUE NOT NULL,
-				[[tokenKey]]        TEXT UNIQUE NOT NULL,
-				[[passwordHash]]    TEXT NOT NULL,
-				[[lastResetSentAt]] TEXT DEFAULT "" NOT NULL,
-				[[created]]         TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%fZ')) NOT NULL,
-				[[updated]]         TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%fZ')) NOT NULL
+			CREATE TABLE IF NOT EXISTS _admins (
+				id              UUID PRIMARY KEY NOT NULL,
+				avatar          INTEGER DEFAULT 0 NOT NULL,
+				email           TEXT UNIQUE NOT NULL,
+				"tokenKey"        TEXT UNIQUE NOT NULL,
+				"passwordHash"    TEXT NOT NULL,
+				"lastResetSentAt" TEXT DEFAULT '' NOT NULL,
+				created         TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+				updated         TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 			);
 
-			CREATE TABLE {{_collections}} (
-				[[id]]         TEXT PRIMARY KEY NOT NULL,
-				[[system]]     BOOLEAN DEFAULT FALSE NOT NULL,
-				[[type]]       TEXT DEFAULT "base" NOT NULL,
-				[[name]]       TEXT UNIQUE NOT NULL,
-				[[schema]]     JSON DEFAULT "[]" NOT NULL,
-				[[indexes]]    JSON DEFAULT "[]" NOT NULL,
-				[[listRule]]   TEXT DEFAULT NULL,
-				[[viewRule]]   TEXT DEFAULT NULL,
-				[[createRule]] TEXT DEFAULT NULL,
-				[[updateRule]] TEXT DEFAULT NULL,
-				[[deleteRule]] TEXT DEFAULT NULL,
-				[[options]]    JSON DEFAULT "{}" NOT NULL,
-				[[created]]    TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%fZ')) NOT NULL,
-				[[updated]]    TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%fZ')) NOT NULL
+			CREATE TABLE IF NOT EXISTS _collections (
+				id         character varying(255) PRIMARY KEY NOT NULL,
+				system     BOOLEAN DEFAULT FALSE NOT NULL,
+				type       TEXT DEFAULT 'base' NOT NULL,
+				name       TEXT UNIQUE NOT NULL,
+				schema     JSONB DEFAULT '[]' NOT NULL,
+				indexes    JSONB DEFAULT '[]' NOT NULL,
+				"listRule"  TEXT DEFAULT NULL,
+				"viewRule"   TEXT DEFAULT NULL,
+				"createRule" TEXT DEFAULT NULL,
+				"updateRule" TEXT DEFAULT NULL,
+				"deleteRule" TEXT DEFAULT NULL,
+				options    JSONB DEFAULT '{}' NOT NULL,
+				created    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+				updated    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 			);
 
-			CREATE TABLE {{_params}} (
-				[[id]]      TEXT PRIMARY KEY NOT NULL,
-				[[key]]     TEXT UNIQUE NOT NULL,
-				[[value]]   JSON DEFAULT NULL,
-				[[created]] TEXT DEFAULT "" NOT NULL,
-				[[updated]] TEXT DEFAULT "" NOT NULL
+			CREATE TABLE IF NOT EXISTS _params (
+				id      UUID PRIMARY KEY NOT NULL,
+				key     TEXT UNIQUE NOT NULL,
+				value   JSONB DEFAULT NULL,
+				created TEXT DEFAULT '' NOT NULL,
+				updated TEXT DEFAULT '' NOT NULL
 			);
 
-			CREATE TABLE {{_externalAuths}} (
-				[[id]]           TEXT PRIMARY KEY NOT NULL,
-				[[collectionId]] TEXT NOT NULL,
-				[[recordId]]     TEXT NOT NULL,
-				[[provider]]     TEXT NOT NULL,
-				[[providerId]]   TEXT NOT NULL,
-				[[created]]      TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%fZ')) NOT NULL,
-				[[updated]]      TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%fZ')) NOT NULL,
+			CREATE TABLE IF NOT EXISTS "_externalAuths" (
+				id           UUID PRIMARY KEY NOT NULL,
+				"collectionId" character varying(255) NOT NULL,
+				"recordId"     UUID NOT NULL,
+				provider     TEXT NOT NULL,
+				"providerId"   TEXT NOT NULL,
+				created      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+				updated      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 				---
-				FOREIGN KEY ([[collectionId]]) REFERENCES {{_collections}} ([[id]]) ON UPDATE CASCADE ON DELETE CASCADE
+				FOREIGN KEY ("collectionId") REFERENCES _collections (id) ON UPDATE CASCADE ON DELETE CASCADE
 			);
 
-			CREATE UNIQUE INDEX _externalAuths_record_provider_idx on {{_externalAuths}} ([[collectionId]], [[recordId]], [[provider]]);
-			CREATE UNIQUE INDEX _externalAuths_provider_providerId_idx on {{_externalAuths}} ([[provider]], [[providerId]]);
+			CREATE UNIQUE INDEX IF NOT EXISTS "_externalAuths_record_provider_idx" on "_externalAuths" ("collectionId", "recordId", provider);
+			CREATE UNIQUE INDEX IF NOT EXISTS "_externalAuths_provider_providerId_idx" on "_externalAuths" (provider, "providerId");
 		`).Execute()
 		if tablesErr != nil {
 			return tablesErr
 		}
 
-		dao := daos.New(db)
+		dao := daos.New(db, "postgres")
 
 		// inserts default settings
 		// -----------------------------------------------------------

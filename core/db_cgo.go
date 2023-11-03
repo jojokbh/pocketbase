@@ -5,6 +5,7 @@ package core
 import (
 	"database/sql"
 
+	_ "github.com/lib/pq"
 	"github.com/mattn/go-sqlite3"
 	"github.com/pocketbase/dbx"
 )
@@ -38,10 +39,20 @@ func init() {
 	)
 
 	dbx.BuilderFuncMap["pb_sqlite3"] = dbx.BuilderFuncMap["sqlite3"]
+	dbx.BuilderFuncMap["postgres"] = dbx.BuilderFuncMap["postgres"]
 }
 
 func connectDB(dbPath string) (*dbx.DB, error) {
 	db, err := dbx.Open("pb_sqlite3", dbPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
+func connectPostgres(dsn string) (*dbx.DB, error) {
+	db, err := dbx.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
 	}

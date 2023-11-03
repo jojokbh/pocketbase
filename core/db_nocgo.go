@@ -20,3 +20,12 @@ func connectDB(dbPath string) (*dbx.DB, error) {
 
 	return db, nil
 }
+
+func connectPostgres(dsn string) (*dbx.DB, error) {
+	db, err := dbx.Open("postgres", dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}

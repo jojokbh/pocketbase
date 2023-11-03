@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/jojokbh/pocketbase/core"
+	"github.com/jojokbh/pocketbase/daos"
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/tools/migrate"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/tools/migrate"
 )
 
 const collectionsCacheKey = "migratecmd_collections"

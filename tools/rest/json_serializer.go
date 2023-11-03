@@ -8,9 +8,9 @@ import (
 	// experimental! (need more tests before replacing encoding/json entirely)
 	goccy "github.com/goccy/go-json"
 
+	"github.com/jojokbh/pocketbase/tools/search"
+	"github.com/jojokbh/pocketbase/tools/tokenizer"
 	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/tokenizer"
 )
 
 type FieldModifier interface {

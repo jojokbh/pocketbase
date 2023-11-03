@@ -3,10 +3,10 @@ package migrations
 import (
 	"fmt"
 
+	"github.com/jojokbh/pocketbase/daos"
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/models/schema"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/models/schema"
 )
 
 // Normalizes old single and multiple values of MultiValuer fields (file, select, relation).
@@ -42,15 +42,15 @@ func normalizeMultivaluerFields(db dbx.Builder) error {
 
 			if opt.IsMultiple() {
 				updateQuery = dao.DB().NewQuery(fmt.Sprintf(
-					`UPDATE {{%s}} set [[%s]] = (
+					`UPDATE "%s" set "%s" = (
 						CASE
-							WHEN COALESCE([[%s]], '') = ''
+							WHEN COALESCE("%s", '') = ''
 							THEN '[]'
 							ELSE (
 								CASE
-									WHEN json_valid([[%s]]) AND json_type([[%s]]) == 'array'
-									THEN [[%s]]
-									ELSE json_array([[%s]])
+									WHEN json_valid("%s") AND json_type("%s") == 'array'
+									THEN "%s"
+									ELSE json_array("%s")
 								END
 							)
 						END

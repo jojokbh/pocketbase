@@ -5,9 +5,9 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/pocketbase/pocketbase/actions/workflows/release.yaml" target="_blank" rel="noopener"><img src="https://github.com/pocketbase/pocketbase/actions/workflows/release.yaml/badge.svg" alt="build" /></a>
-    <a href="https://github.com/pocketbase/pocketbase/releases" target="_blank" rel="noopener"><img src="https://img.shields.io/github/release/pocketbase/pocketbase.svg" alt="Latest releases" /></a>
-    <a href="https://pkg.go.dev/github.com/pocketbase/pocketbase" target="_blank" rel="noopener"><img src="https://godoc.org/github.com/ganigeorgiev/fexpr?status.svg" alt="Go package documentation" /></a>
+    <a href="https://github.com/jojokbh/pocketbase/actions/workflows/release.yaml" target="_blank" rel="noopener"><img src="https://github.com/jojokbh/pocketbase/actions/workflows/release.yaml/badge.svg" alt="build" /></a>
+    <a href="https://github.com/jojokbh/pocketbase/releases" target="_blank" rel="noopener"><img src="https://img.shields.io/github/release/pocketbase/pocketbase.svg" alt="Latest releases" /></a>
+    <a href="https://pkg.go.dev/github.com/jojokbh/pocketbase" target="_blank" rel="noopener"><img src="https://godoc.org/github.com/ganigeorgiev/fexpr?status.svg" alt="Go package documentation" /></a>
 </p>
 
 [PocketBase](https://pocketbase.io) is an open source Go backend, consisting of:
@@ -27,19 +27,19 @@
 
 The easiest way to interact with the API is to use one of the official SDK clients:
 
-- **JavaScript - [pocketbase/js-sdk](https://github.com/pocketbase/js-sdk)** (_browser and node_)
-- **Dart - [pocketbase/dart-sdk](https://github.com/pocketbase/dart-sdk)** (_web, mobile, desktop_)
+- **JavaScript - [pocketbase/js-sdk](https://github.com/jojokbh/js-sdk)** (_browser and node_)
+- **Dart - [pocketbase/dart-sdk](https://github.com/jojokbh/dart-sdk)** (_web, mobile, desktop_)
 
 ## Overview
 
-PocketBase could be [downloaded directly as a standalone app](https://github.com/pocketbase/pocketbase/releases) or it could be used as a Go framework/toolkit which allows you to build
+PocketBase could be [downloaded directly as a standalone app](https://github.com/jojokbh/pocketbase/releases) or it could be used as a Go framework/toolkit which allows you to build
 your own custom app specific business logic and still have a single portable executable at the end.
 
 ### Installation
 
 ```sh
 # go 1.19+
-go get github.com/pocketbase/pocketbase
+go get github.com/jojokbh/pocketbase
 ```
 
 ### Example
@@ -52,9 +52,9 @@ import (
     "net/http"
 
     "github.com/labstack/echo/v5"
-    "github.com/pocketbase/pocketbase"
-    "github.com/pocketbase/pocketbase/apis"
-    "github.com/pocketbase/pocketbase/core"
+    "github.com/jojokbh/pocketbase"
+    "github.com/jojokbh/pocketbase/apis"
+    "github.com/jojokbh/pocketbase/core"
 )
 
 func main() {
@@ -143,7 +143,7 @@ You are free to do whatever you want with it, even offering it as a paid service
 You could help continuing its development by:
 
 - [Contribute to the source code](CONTRIBUTING.md)
-- [Suggest new features and report issues](https://github.com/pocketbase/pocketbase/issues)
+- [Suggest new features and report issues](https://github.com/jojokbh/pocketbase/issues)
 - [Donate a small amount](https://pocketbase.io/support-us)
 
 PRs for new OAuth2 providers, bug fixes, code optimizations and documentation improvements are more than welcome.

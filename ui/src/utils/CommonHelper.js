@@ -1213,7 +1213,7 @@ export default class CommonHelper {
         let url = window.location.href.substring(0, window.location.href.indexOf("/_")) || fallback || '/';
 
         // for broader compatibility replace localhost with 127.0.0.1
-        // (see https://github.com/pocketbase/js-sdk/issues/21)
+        // (see https://github.com/jojokbh/js-sdk/issues/21)
         return url.replace('//localhost', '//127.0.0.1');
     }
 

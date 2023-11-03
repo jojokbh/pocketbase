@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tools/security"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/jojokbh/pocketbase/models"
+	"github.com/jojokbh/pocketbase/tests"
+	"github.com/jojokbh/pocketbase/tools/security"
+	"github.com/jojokbh/pocketbase/tools/types"
 )
 
 func TestParamQuery(t *testing.T) {
 	app, _ := tests.NewTestApp()
 	defer app.Cleanup()
 
-	expected := "SELECT {{_params}}.* FROM `_params`"
+	expected := "SELECT _params.* FROM `_params`"
 
 	sql := app.Dao().ParamQuery().Build().SQL()
 	if sql != expected {
