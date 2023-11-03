@@ -205,7 +205,7 @@ func (r *Runner) Down(toRevertCount int) ([]string, error) {
 func (r *Runner) createMigrationsTable() error {
 	rawQuery := fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %v (file VARCHAR(255) PRIMARY KEY NOT NULL, applied INTEGER NOT NULL)",
-		r.db.QuoteTableName(r.tableName),
+		r.tableName,
 	)
 
 	_, err := r.db.NewQuery(rawQuery).Execute()

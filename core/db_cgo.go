@@ -5,6 +5,7 @@ package core
 import (
 	"database/sql"
 
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/mattn/go-sqlite3"
 	"github.com/pocketbase/dbx"
 )
@@ -19,6 +20,9 @@ func init() {
 	// Note 2: the busy_timeout pragma must be first because
 	// the connection needs to be set to block on busy before WAL mode
 	// is set in case it hasn't been already set by another connection.
+
+	sql.Register("pb_postgres", &stdlib.Driver{})
+
 	sql.Register("pb_sqlite3",
 		&sqlite3.SQLiteDriver{
 			ConnectHook: func(conn *sqlite3.SQLiteConn) error {
@@ -38,10 +42,20 @@ func init() {
 	)
 
 	dbx.BuilderFuncMap["pb_sqlite3"] = dbx.BuilderFuncMap["sqlite3"]
+	dbx.BuilderFuncMap["pb_postgres"] = dbx.BuilderFuncMap["pgx"]
 }
 
 func connectDB(dbPath string) (*dbx.DB, error) {
 	db, err := dbx.Open("pb_sqlite3", dbPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
+func connectPostgres(connectionString string) (*dbx.DB, error) {
+	db, err := dbx.Open("pb_postgres", connectionString)
 	if err != nil {
 		return nil, err
 	}

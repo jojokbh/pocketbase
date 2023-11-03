@@ -90,7 +90,7 @@ func (dao *Dao) TableIndexes(tableName string) (map[string]string, error) {
 // "tableName" argument must come only from trusted input!
 func (dao *Dao) DeleteTable(tableName string) error {
 	_, err := dao.DB().NewQuery(fmt.Sprintf(
-		"DROP TABLE IF EXISTS {{%s}}",
+		"DROP TABLE IF EXISTS %s",
 		tableName,
 	)).Execute()
 

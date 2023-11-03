@@ -106,7 +106,7 @@ func (dao *Dao) ModelQuery(m models.Model) *dbx.SelectQuery {
 	tableName := m.TableName()
 
 	return dao.DB().
-		Select("{{" + tableName + "}}.*").
+		Select(tableName + ".*").
 		From(tableName).
 		WithBuildHook(func(query *dbx.Query) {
 			query.WithExecHook(execLockRetry(dao.ModelQueryTimeout, dao.MaxLockRetries))

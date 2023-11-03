@@ -527,7 +527,7 @@ func (e *manyVsManyExpr) Build(db *dbx.DB, params dbx.Params) string {
 	}
 
 	return fmt.Sprintf(
-		"NOT EXISTS (SELECT 1 FROM (%s) {{%s}} LEFT JOIN (%s) {{%s}} WHERE %s)",
+		"NOT EXISTS (SELECT 1 FROM (%s) %s LEFT JOIN (%s) %s WHERE %s)",
 		e.leftSubQuery.Build(db, params),
 		lAlias,
 		e.rightSubQuery.Build(db, params),
@@ -586,7 +586,7 @@ func (e *manyVsOneExpr) Build(db *dbx.DB, params dbx.Params) string {
 	}
 
 	return fmt.Sprintf(
-		"NOT EXISTS (SELECT 1 FROM (%s) {{%s}} WHERE %s)",
+		"NOT EXISTS (SELECT 1 FROM (%s) %s WHERE %s)",
 		e.subQuery.Build(db, params),
 		alias,
 		whereExpr.Build(db, params),

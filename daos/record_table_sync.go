@@ -49,11 +49,11 @@ func (dao *Dao) SyncRecordTableSchema(newCollection *models.Collection, oldColle
 
 			// add schema field definitions
 			for _, field := range newCollection.Schema.Fields() {
-				cols[field.Name] = field.ColDefinition()
+				cols["`"+field.Name+"`"] = field.ColDefinition()
 			}
 
 			// create table
-			if _, err := txDao.DB().CreateTable(tableName, cols).Execute(); err != nil {
+			if _, err := txDao.DB().CreateTable("`"+tableName+"`", cols).Execute(); err != nil {
 				return err
 			}
 
@@ -61,9 +61,9 @@ func (dao *Dao) SyncRecordTableSchema(newCollection *models.Collection, oldColle
 			if newCollection.IsAuth() {
 				_, err := txDao.DB().NewQuery(fmt.Sprintf(
 					`
-					CREATE UNIQUE INDEX _%s_username_idx ON {{%s}} ([[username]]);
-					CREATE UNIQUE INDEX _%s_email_idx ON {{%s}} ([[email]]) WHERE [[email]] != '';
-					CREATE UNIQUE INDEX _%s_tokenKey_idx ON {{%s}} ([[tokenKey]]);
+					CREATE UNIQUE INDEX _%s_username_idx ON %s (username);
+					CREATE UNIQUE INDEX _%s_email_idx ON %s (email) WHERE email != '';
+					CREATE UNIQUE INDEX _%s_tokenKey_idx ON %s (tokenKey);
 					`,
 					newCollection.Id, tableName,
 					newCollection.Id, tableName,
@@ -93,7 +93,7 @@ func (dao *Dao) SyncRecordTableSchema(newCollection *models.Collection, oldColle
 
 		// check for renamed table
 		if !strings.EqualFold(oldTableName, newTableName) {
-			_, err := txDao.DB().RenameTable("{{"+oldTableName+"}}", "{{"+newTableName+"}}").Execute()
+			_, err := txDao.DB().RenameTable(""+oldTableName+"", ""+newTableName+"").Execute()
 			if err != nil {
 				return err
 			}
@@ -216,15 +216,15 @@ func (dao *Dao) normalizeSingleVsMultipleFieldChanges(newCollection, oldCollecti
 			if !isOldMultiple && isNewMultiple {
 				// single -> multiple (convert to array)
 				copyQuery = txDao.DB().NewQuery(fmt.Sprintf(
-					`UPDATE {{%s}} set [[%s]] = (
+					`UPDATE %s set %s = (
 							CASE
-								WHEN COALESCE([[%s]], '') = ''
+								WHEN COALESCE(%s, '') = ''
 								THEN '[]'
 								ELSE (
 									CASE
-										WHEN json_valid([[%s]]) AND json_type([[%s]]) == 'array'
-										THEN [[%s]]
-										ELSE json_array([[%s]])
+										WHEN json_valid(%s) AND json_type(%s) == 'array'
+										THEN %s
+										ELSE json_array(%s)
 									END
 								)
 							END
@@ -243,15 +243,15 @@ func (dao *Dao) normalizeSingleVsMultipleFieldChanges(newCollection, oldCollecti
 				// note: for file fields the actual file objects are not
 				// deleted allowing additional custom handling via migration
 				copyQuery = txDao.DB().NewQuery(fmt.Sprintf(
-					`UPDATE {{%s}} set [[%s]] = (
+					`UPDATE %s set %s = (
 						CASE
-							WHEN COALESCE([[%s]], '[]') = '[]'
+							WHEN COALESCE(%s, '[]') = '[]'
 							THEN ''
 							ELSE (
 								CASE
-									WHEN json_valid([[%s]]) AND json_type([[%s]]) == 'array'
-									THEN COALESCE(json_extract([[%s]], '$[#-1]'), '')
-									ELSE [[%s]]
+									WHEN json_valid(%s) AND json_type(%s) == 'array'
+									THEN COALESCE(json_extract(%s, '$[#-1]'), '')
+									ELSE %s
 								END
 							)
 						END
@@ -302,7 +302,7 @@ func (dao *Dao) dropCollectionIndex(collection *models.Collection) error {
 				continue
 			}
 
-			if _, err := txDao.DB().NewQuery(fmt.Sprintf("DROP INDEX IF EXISTS [[%s]]", parsed.IndexName)).Execute(); err != nil {
+			if _, err := txDao.DB().NewQuery(fmt.Sprintf("DROP INDEX IF EXISTS %s", parsed.IndexName)).Execute(); err != nil {
 				return err
 			}
 		}

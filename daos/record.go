@@ -378,7 +378,7 @@ func (dao *Dao) IsRecordValueUnique(
 
 	var expr dbx.Expression
 	if collection.IsAuth() && key == schema.FieldNameUsername {
-		expr = dbx.NewExp("LOWER([["+schema.FieldNameUsername+"]])={:username}", dbx.Params{
+		expr = dbx.NewExp("LOWER("+schema.FieldNameUsername+")={:username}", dbx.Params{
 			"username": strings.ToLower(cast.ToString(value)),
 		})
 	} else {
@@ -484,7 +484,7 @@ func (dao *Dao) FindAuthRecordByUsername(collectionNameOrId string, username str
 	record := &models.Record{}
 
 	err = dao.RecordQuery(collection).
-		AndWhere(dbx.NewExp("LOWER([["+schema.FieldNameUsername+"]])={:username}", dbx.Params{
+		AndWhere(dbx.NewExp("LOWER("+schema.FieldNameUsername+")={:username}", dbx.Params{
 			"username": strings.ToLower(username),
 		})).
 		Limit(1).
@@ -675,7 +675,7 @@ func (dao *Dao) cascadeRecordDelete(mainRecord *models.Record, refs map[*models.
 				query.AndWhere(dbx.HashExp{prefixedFieldName: mainRecord.Id})
 			} else {
 				query.InnerJoin(fmt.Sprintf(
-					`json_each(CASE WHEN json_valid([[%s]]) THEN [[%s]] ELSE json_array([[%s]]) END) as {{%s}}`,
+					`json_each(CASE WHEN json_valid(%s) THEN %s ELSE json_array(%s) END) as %s`,
 					prefixedFieldName, prefixedFieldName, prefixedFieldName, uniqueJsonEachAlias,
 				), dbx.HashExp{uniqueJsonEachAlias + ".value": mainRecord.Id})
 			}

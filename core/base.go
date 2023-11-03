@@ -982,7 +982,7 @@ func (app *BaseApp) initLogsDB() error {
 		maxIdleConns = app.logsMaxIdleConns
 	}
 
-	concurrentDB, err := connectDB(filepath.Join(app.DataDir(), "logs.db"))
+	concurrentDB, err := connectPostgres("user=testuser password=password host=localhost port=5432 database=logs sslmode=disable")
 	if err != nil {
 		return err
 	}
@@ -990,7 +990,7 @@ func (app *BaseApp) initLogsDB() error {
 	concurrentDB.DB().SetMaxIdleConns(maxIdleConns)
 	concurrentDB.DB().SetConnMaxIdleTime(5 * time.Minute)
 
-	nonconcurrentDB, err := connectDB(filepath.Join(app.DataDir(), "logs.db"))
+	nonconcurrentDB, err := connectPostgres("user=testuser password=password host=localhost port=5432 database=logs sslmode=disable")
 	if err != nil {
 		return err
 	}
@@ -1013,7 +1013,7 @@ func (app *BaseApp) initDataDB() error {
 		maxIdleConns = app.dataMaxIdleConns
 	}
 
-	concurrentDB, err := connectDB(filepath.Join(app.DataDir(), "data.db"))
+	concurrentDB, err := connectPostgres("user=testuser password=password host=localhost port=5432 database=data sslmode=disable")
 	if err != nil {
 		return err
 	}
@@ -1021,7 +1021,7 @@ func (app *BaseApp) initDataDB() error {
 	concurrentDB.DB().SetMaxIdleConns(maxIdleConns)
 	concurrentDB.DB().SetConnMaxIdleTime(5 * time.Minute)
 
-	nonconcurrentDB, err := connectDB(filepath.Join(app.DataDir(), "data.db"))
+	nonconcurrentDB, err := connectPostgres("user=testuser password=password host=localhost port=5432 database=data sslmode=disable")
 	if err != nil {
 		return err
 	}

@@ -41,7 +41,7 @@ func init() {
 				}
 
 				_, err := db.NewQuery(fmt.Sprintf(
-					"UPDATE {{%s}} SET [[%s]] = %s WHERE [[%s]] IS NULL",
+					"UPDATE %s SET %s = %s WHERE %s IS NULL",
 					collection.Name,
 					f.Name,
 					defaultVal,

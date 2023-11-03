@@ -25,7 +25,7 @@ import (
 // "name" argument must come only from trusted input!
 func (dao *Dao) DeleteView(name string) error {
 	_, err := dao.DB().NewQuery(fmt.Sprintf(
-		"DROP VIEW IF EXISTS {{%s}}",
+		"DROP VIEW IF EXISTS %s",
 		name,
 	)).Execute()
 
@@ -56,7 +56,7 @@ func (dao *Dao) SaveView(name string, selectQuery string) error {
 		//
 		// note: the query is wrapped in a secondary SELECT as a rudimentary
 		// measure to discourage multiple inline sql statements execution.
-		viewQuery := fmt.Sprintf("CREATE VIEW {{%s}} AS SELECT * FROM (%s)", name, trimmed)
+		viewQuery := fmt.Sprintf("CREATE VIEW %s AS SELECT * FROM (%s)", name, trimmed)
 		if _, err := txDao.DB().NewQuery(viewQuery).Execute(); err != nil {
 			return err
 		}
@@ -199,7 +199,7 @@ func (dao *Dao) FindRecordByViewFile(
 		query.AndWhere(dbx.HashExp{cleanFieldName: filename})
 	} else {
 		query.InnerJoin(fmt.Sprintf(
-			`json_each(CASE WHEN json_valid([[%s]]) THEN [[%s]] ELSE json_array([[%s]]) END) as {{_je_file}}`,
+			`json_each(CASE WHEN json_valid(%s) THEN %s ELSE json_array(%s) END) as _je_file`,
 			cleanFieldName, cleanFieldName, cleanFieldName,
 		), dbx.HashExp{"_je_file.value": filename})
 	}

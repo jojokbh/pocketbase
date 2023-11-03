@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/pocketbase/dbx"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
-	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/migrations"
 	"github.com/pocketbase/pocketbase/migrations/logs"
@@ -52,11 +52,11 @@ type ServeConfig struct {
 //
 // Example:
 //
-// 	app.Bootstrap()
-// 	apis.Serve(app, apis.ServeConfig{
-// 		HttpAddr:        "127.0.0.1:8080",
-// 		ShowStartBanner: false,
-// 	})
+//	app.Bootstrap()
+//	apis.Serve(app, apis.ServeConfig{
+//		HttpAddr:        "127.0.0.1:8080",
+//		ShowStartBanner: false,
+//	})
 func Serve(app core.App, config ServeConfig) (*http.Server, error) {
 	if len(config.AllowedOrigins) == 0 {
 		config.AllowedOrigins = []string{"*"}

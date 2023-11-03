@@ -16,6 +16,7 @@ import (
 )
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	app := pocketbase.New()
 
 	// ---------------------------------------------------------------

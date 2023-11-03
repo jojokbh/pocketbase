@@ -520,7 +520,7 @@ func (r *runner) processActiveProps() (*search.ResolverResult, error) {
 			r.resolver.registerJoin(
 				inflector.Columnify(newCollectionName),
 				newTableAlias,
-				dbx.NewExp(fmt.Sprintf("[[%s.id]] = [[%s]]", newTableAlias, prefixedFieldName)),
+				dbx.NewExp(fmt.Sprintf("[[%s.id]] = %s", newTableAlias, prefixedFieldName)),
 			)
 		} else {
 			jeAlias := r.activeTableAlias + "_" + cleanFieldName + "_je"
@@ -551,7 +551,7 @@ func (r *runner) processActiveProps() (*search.ResolverResult, error) {
 				&join{
 					tableName:  inflector.Columnify(newCollectionName),
 					tableAlias: newTableAlias2,
-					on:         dbx.NewExp(fmt.Sprintf("[[%s.id]] = [[%s]]", newTableAlias2, prefixedFieldName2)),
+					on:         dbx.NewExp(fmt.Sprintf("[[%s.id]] = %s", newTableAlias2, prefixedFieldName2)),
 				},
 			)
 		} else {
@@ -580,7 +580,7 @@ func (r *runner) processActiveProps() (*search.ResolverResult, error) {
 func jsonArrayLength(tableColumnPair string) string {
 	return fmt.Sprintf(
 		// note: the case is used to normalize value access for single and multiple relations.
-		`json_array_length(CASE WHEN json_valid([[%s]]) THEN [[%s]] ELSE (CASE WHEN [[%s]] = '' OR [[%s]] IS NULL THEN json_array() ELSE json_array([[%s]]) END) END)`,
+		`json_array_length(CASE WHEN json_valid(%s) THEN %s ELSE (CASE WHEN %s = '' OR %s IS NULL THEN json_array() ELSE json_array(%s) END) END)`,
 		tableColumnPair, tableColumnPair, tableColumnPair, tableColumnPair, tableColumnPair,
 	)
 }
@@ -588,7 +588,7 @@ func jsonArrayLength(tableColumnPair string) string {
 func jsonEach(tableColumnPair string) string {
 	return fmt.Sprintf(
 		// note: the case is used to normalize value access for single and multiple relations.
-		`json_each(CASE WHEN json_valid([[%s]]) THEN [[%s]] ELSE json_array([[%s]]) END)`,
+		`json_each(CASE WHEN json_valid(%s) THEN %s ELSE json_array(%s) END)`,
 		tableColumnPair, tableColumnPair, tableColumnPair,
 	)
 }

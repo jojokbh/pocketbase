@@ -16,9 +16,9 @@ func init() {
 		return err
 	}, func(db dbx.Builder) error {
 		_, err := db.NewQuery(`
-			UPDATE {{_params}}
-			SET [[value]] = replace([[value]], '"oidcAuth":', '"authentikAuth":')
-			WHERE [[key]] = 'settings'
+			UPDATE _params
+			SET value = replace([[value]], '"oidcAuth":', '"authentikAuth":')
+			WHERE key = 'settings'
 		`).Execute()
 
 		return err

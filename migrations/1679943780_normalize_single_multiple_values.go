@@ -42,15 +42,15 @@ func normalizeMultivaluerFields(db dbx.Builder) error {
 
 			if opt.IsMultiple() {
 				updateQuery = dao.DB().NewQuery(fmt.Sprintf(
-					`UPDATE {{%s}} set [[%s]] = (
+					`UPDATE %s set %s = (
 						CASE
-							WHEN COALESCE([[%s]], '') = ''
+							WHEN COALESCE(%s, '') = ''
 							THEN '[]'
 							ELSE (
 								CASE
-									WHEN json_valid([[%s]]) AND json_type([[%s]]) == 'array'
-									THEN [[%s]]
-									ELSE json_array([[%s]])
+									WHEN json_valid(%s) AND json_type(%s) == 'array'
+									THEN %s
+									ELSE json_array(%s)
 								END
 							)
 						END
@@ -65,15 +65,15 @@ func normalizeMultivaluerFields(db dbx.Builder) error {
 				))
 			} else {
 				updateQuery = dao.DB().NewQuery(fmt.Sprintf(
-					`UPDATE {{%s}} set [[%s]] = (
+					`UPDATE %s set %s = (
 						CASE
-							WHEN COALESCE([[%s]], '[]') = '[]'
+							WHEN COALESCE(%s, '[]') = '[]'
 							THEN ''
 							ELSE (
 								CASE
-									WHEN json_valid([[%s]]) AND json_type([[%s]]) == 'array'
-									THEN COALESCE(json_extract([[%s]], '$[#-1]'), '')
-									ELSE [[%s]]
+									WHEN json_valid(%s) AND json_type(%s) == 'array'
+									THEN COALESCE(json_extract(%s, '$[#-1]'), '')
+									ELSE %s
 								END
 							)
 						END
